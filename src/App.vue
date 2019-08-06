@@ -1,57 +1,30 @@
 <template>
-<div>
-  <!-- <input type="text" v-model="postTitle" placeholder="title"/>
-  <input type="text" v-model="postBody" placeholder="body"/>
-  <input type="button" @click="createPost()" value="submit"> -->
-      <div class="container">
-      <div class="row">
-        <div class="col-4" v-if="posts && posts.length">
-              <li v-for="post of posts" v-bind:key="post.id">
-      <p><strong>{{post.title}}</strong></p>
-      <p>{{post.body}}</p>
-    </li>
-        </div>
-      </div>
-    </div>
-  <!-- <ul v-if="posts && posts.length">
-    <li v-for="post of posts" v-bind:key="post.id">
-      <p><strong>{{post.title}}</strong></p>
-      <p>{{post.body}}</p>
-    </li>
-  </ul> -->
-</div>
+  <div id="app">        
+  </div>
 </template>
 
 <script>
-import axios from 'axios'
+import { post } from "./request/BaseRequest";
 
 export default {
-  name: 'app',
-  data () {
-    return {
-      postBody: null,
-      postTitle: null,
-      posts: []
-    }
+  name: 'App',
+  components: {
+  },
+  mounted() {
+    post("/marco", {
+      action: "view_router_trafic"
+    }).then(data => {
+      console.log('RESULT', data)
+    }).catch(error =>{
+      console.log('ERROR', error)
+    })
   },
   created() {
-    this.$http.get('posts').then((response) => {
-      this.posts = response.data
-    })
-    .catch((e) => {
-      console.error(e)
-    })
+    
   },
-  methods: {
-    // createPost () {
-    //   this.$http.post('posts', {
-    //     title: this.postTitle,
-    //     body: this.postBody
-    //   }).then((response) => {})
-    //   .catch((e) => {
-    //     console.error(e)
-    //   })
-    // }
-  }
 }
 </script>
+
+<style>
+
+</style>
