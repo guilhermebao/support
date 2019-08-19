@@ -1,16 +1,17 @@
 <script>
 import { post } from "./request/BaseRequest";
-import LineChart from "./Chart.vue";
+import ChartData from "./components/ChartData.vue"
 
 export default {
   name: "App",
-  components: { LineChart },
+    components: {
+    ChartData
+  },
   data() {
     return {
       list: [],
       search: "",
-      loaded: false,
-      chartdata: null
+      loaded: false
     };
   },
   mounted() {
@@ -69,17 +70,13 @@ export default {
 
 <template>
   <div id="app">
-    <div class="container">
-      <line-chart v-if="loaded" :chartdata="list" :options="options" />
-    </div>
 
     <div class="container-fluid mt-3">
       
       <div class="form-group">
-        <!-- <label class="title-label">Filtro:</label> -->
         <input class="form-control" type="text" v-model="search" maxlength="50" placeholder="Busque pela Id">
       </div>
-
+      <ChartData/>
       <div class="table-wrapper">
         <table class="table table-sm table-striped">
           <thead>
