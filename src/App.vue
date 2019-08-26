@@ -1,18 +1,37 @@
 <script>
 import { post } from "./request/BaseRequest";
-import ChartData from "./components/ChartData.vue"
+import ChartData from "./components/ChartData.vue";
 
 export default {
   name: "App",
-    components: {
+  components: {
     ChartData
   },
   data() {
     return {
-      list: [],
-      search: "",
+      // labels: ["January", "February"],
+      list: [
+      // {
+      //   label: '2018 Sales',
+      //   borderColor: 'rgba(50, 115, 220, 0.5)',
+      //   backgroundColor: 'rgba(50, 115, 220, 0.1)',
+      //   data: [300, 700, 450, 750, 450, 300, 700, 450, 750, 450, 750, 450, 300, 700, 450, 750, 450]
+      // },
+      // {
+      //   label: '2017 Sales',
+      //   borderColor: 'rgba(255, 56, 96, 0.5)',
+      //   backgroundColor: 'rgba(255, 56, 96, 0.1)',
+      //   data: [600, 550, 750, 250, 700, 450, 750, 450, 300, 700, 450, 700, 450, 750, 450, 300, 400]
+      // }
+    ],
+      // search: "",
       loaded: false
     };
+  },
+  methods: {
+    update() {
+        location.reload();
+    },
   },
   mounted() {
     this.loaded = false;
@@ -20,101 +39,99 @@ export default {
       action: "view_router_trafic"
     })
       .then(data => {
-        this.list = data;
+        let line;
+        let interfaceName;
+        let inputTrafit;
+        let output = [];
+
+        // console.log(data);
+
+        for (let i = 0; i < data.list.length; i++) {
+          line = data.list[i];
+          output = [];
+
+          console.log("line", line);
+
+          for (let j = 0; j < line.length; j++) {
+            output.push(line[j].output_trafic);
+            interfaceName = line[j].interface;
+            // inputTrafit = line[j].input_trafit;
+          }
+
+          this.list.push({
+            label: interfaceName,
+            // borderColor: 'rgba(50, 115, 220, 0.5)',
+            backgroundColor: 'rgba(50, 115, 220, 0.1)',
+            pointBackgroundColor: "white",
+            borderWidth: 1,
+            pointBorderColor: 'rgba(50, 115, 220, 0.5)',
+            data: output
+          });
+
+        }
+
+        for (let i = 0; i < data.list.length; i++) {
+          line = data.list[i];
+          output = [];
+
+          console.log("line", line);
+
+          for (let j = 0; j < line.length; j++) {
+            output.push(line[j].input_trafit);
+            interfaceName = line[j].interface;
+            // inputTrafit = line[j].input_trafit;
+          }
+
+          this.list.push({
+            label: interfaceName,
+            borderColor: 'rgba(235, 153, 63, 0.5)',
+            pointBackgroundColor: "white",
+            backgroundColor: 'rgba(235, 153, 63, 0.1)',
+            borderWidth: 1,
+            data: output
+          });
+
+        }
+
+        // console.log(this.list);
+
+        this.labels = data.interface;
         this.loaded = true;
-        console.log("RESULT", data);
       })
       .catch(error => {
         console.log("ERROR", error);
       });
-      this.fillData()
-  },
-  methods: {
-      fillData () {
-        this.datacollection = {
-          labels: [this.getRandomInt(), this.getRandomInt()],
-          datasets: [
-            {
-              label: 'Data One',
-              backgroundColor: '#f87979',
-              data: [this.getRandomInt(), this.getRandomInt()]
-            }, {
-              label: 'Data One',
-              backgroundColor: '#f87979',
-              data: [this.getRandomInt(), this.getRandomInt()]
-            }
-          ]
-        }
-      },
-      getRandomInt () {
-        return Math.floor(Math.random() * (50 - 5 + 1)) + 5
-      },
-      },
-  computed: {
-    filteredItems() {
-      return this.list.filter(item => {
-        console.log('item')
-        if (this.search) {
-          return (
-            item.id_query.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-          );
-        } else {
-          return item;
-        }
-      });
-    }
-  },
-  created() {}
+    // this.fillData();
+  }
 };
 </script>
 
 <template>
   <div id="app">
-
+    
     <div class="container-fluid mt-3">
-      
-      <div class="form-group">
-        <input class="form-control" type="text" v-model="search" maxlength="50" placeholder="Busque pela Id">
+      <div class="text-center mb-2">
+        <button class="btn btn-primary btn-update" type="submit" @click.prevent="update()">Atualizar</button>
       </div>
-      <ChartData/>
-      <div class="table-wrapper">
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th class="color-blue">Id</th>
-              <th class="color-blue">Entrada</th>
-              <th class="color-blue">Saida</th>
-              <th class="color-blue">interface</th>
-              <th class="color-blue">Tempo de coleta</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in list" :key="item.id">
-              <td>{{ item.id_query }}</td>
-              <td>{{ item.input_trafit }}</td>
-              <td>{{ item.output_trafic }}</td>
-              <td>{{ item.interface }}</td>
-              <td>{{ item.time_colect }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <ChartData v-if="loaded" :mylabels="labels" :mydatasets="list" />
     </div>
   </div>
 </template>
 
 <style>
-.table-wrapper {
-  overflow-x: auto;
+
+.btn-update {
+  width: 200px;
+  border-radius: 20px;
+  background-color: #eb993f;
+  border-color: #eb993f;
 }
 
-.form-control {
-  padding-left: 15px;
-  border-radius: 25px;
-  border-color: #0083d0;
+.btn-update:hover {
+  width: 200px;
+  border-radius: 20px;
+  background-color: #e2851e;
+  border-color: #e2851e;
 }
 
-.color-blue {
-  color: #0083d0;
-}
 </style>
